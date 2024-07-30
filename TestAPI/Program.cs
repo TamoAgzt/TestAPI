@@ -1,18 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using TestAPI.Contexts;
+using TestAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DataContext>(dbOptions =>
     dbOptions.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
+
+// CORS setup
+builder.Services.SetupCorsAny();
 
 var app = builder.Build();
 
@@ -26,6 +27,11 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseCors("AllowedOrigins");
+
+// Use your custom database migration middleware
+app.UseDatabaseMigration();
 
 app.MapControllers();
 
