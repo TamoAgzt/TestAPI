@@ -44,8 +44,38 @@ namespace TestAPI.Controllers
             return Ok(await _ctx.tb_Profiles.ToListAsync());
         }
 
-        //[HttpPut]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProfile(int id, Profile updatedProfile)
+        {
+            var profile = await _ctx.tb_Profiles.FindAsync(id);
+            if (profile == null)
+            {
+                return BadRequest("Profile not found");
+            }
 
-        //[HttpDelete]
+            profile.Name = updatedProfile.Name;
+            profile.Role = updatedProfile.Role;
+            profile.Score = updatedProfile.Score;
+            profile.UpdatedAt = updatedProfile.UpdatedAt;
+
+            await _ctx.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProfile(int id)
+        {
+            var profile = await _ctx.tb_Profiles.FindAsync(id);
+            if (profile == null)
+            {
+                return BadRequest("Profile not found");
+            }
+
+            _ctx.tb_Profiles.Remove(profile);
+            await _ctx.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
